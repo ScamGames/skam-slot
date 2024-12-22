@@ -58,6 +58,7 @@ body {
   /* border: 1px solid white; */
   padding: 24px;
   border-radius: 10px;
+  margin: 25px;
 }
 
 .door {
@@ -197,7 +198,7 @@ button:active {
 
 @media only screen and (max-width: 600px) {
   .door {
-    width: 88.43px;
+    width: 86px;
     height: 110.03px;
   }
 }
