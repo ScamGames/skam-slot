@@ -6,13 +6,41 @@
     "./images/img2.png",
     "./images/img3.png",
     "./images/img4.png",
+    "./images/img5.png",
+    "./images/img6.png",
+    "./images/img7.png",
+    "./images/img8.png",
+    "./images/img9.png",
+    "./images/img10.png",
+    "./images/img11.png",
+    "./images/img12.png",
+    "./images/img13.png",
+    "./images/img14.png",
+    "./images/img15.png",
+    "./images/img16.png",
+    "./images/img17.png",
+    "./images/img18.png",
+    "./images/img19.png",
+    "./images/img20.png",
+    "./images/img21.png",
+    "./images/img22.png",
   ];
 
   let wins = 0;
+  let isSpinning = false; // Track if spinning is in progress
+  let isReset = false; // Track if reset has been triggered
 
   const doors = document.querySelectorAll(".door");
-  document.querySelector("#spinner").addEventListener("click", spin);
-  document.querySelector("#reseter").addEventListener("click", init);
+  const spinButton = document.querySelector("#spinner");
+  const resetButton = document.querySelector("#reseter");
+
+  spinButton.disabled = true; // Disable spin initially
+  spinButton.addEventListener("click", spin);
+  resetButton.addEventListener("click", () => {
+    init();
+    isReset = true; // Mark reset as triggered
+    spinButton.disabled = false; // Enable spin after reset
+  });
 
   const defaults = {
     spread: 360,
@@ -41,14 +69,31 @@
   }
 
   async function spin() {
-    init(false, 1, 2);
-    for (const door of doors) {
-      const boxes = door.querySelector(".boxes");
-      const duration = parseInt(boxes.style.transitionDuration);
-      boxes.style.transform = "translateY(0)";
-      await new Promise((resolve) => setTimeout(resolve, duration * 100));
+    if (isSpinning) return; // Prevent multiple spins if already spinning
+    if (!isReset) return; // Prevent spin if reset hasn't been triggered
+
+    // Disable buttons and set the spinning flag
+    isSpinning = true;
+    spinButton.disabled = true;
+    resetButton.disabled = true;
+
+    try {
+      init(false, 1, 2);
+      for (const door of doors) {
+        const boxes = door.querySelector(".boxes");
+        const duration = parseInt(boxes.style.transitionDuration);
+        boxes.style.transform = "translateY(0)";
+        await new Promise((resolve) => setTimeout(resolve, duration * 100));
+      }
+      await checkWin();
+    } finally {
+      // Always re-enable reset button after spinning completes
+      isSpinning = false;
+      resetButton.disabled = false;
+
+      // Require another reset before next spin
+      isReset = false;
     }
-    checkWin();
   }
 
   function init(firstInit = true, groups = 1, duration = 1) {
@@ -87,6 +132,11 @@
               img.style.filter = "blur(0)";
               if (index > 0) img.parentElement.remove();
             });
+
+            // Add flare only after the transition ends
+            const flare = document.createElement("div");
+            flare.classList.add("flare");
+            this.appendChild(flare);
           },
           { once: true }
         );
@@ -96,7 +146,11 @@
 
       for (let i = pool.length - 1; i >= 0; i--) {
         const box = document.createElement("div");
+        const flare = document.createElement("div");
+        flare.classList.add("flare");
         box.classList.add("box");
+        box.appendChild(flare);
+
         box.style.width = door.clientWidth + "px";
         box.style.height = door.clientHeight + "px";
 
@@ -110,7 +164,6 @@
         box.appendChild(img);
         boxesClone.appendChild(box);
       }
-
       boxesClone.style.transitionDuration = `${duration > 0 ? duration : 1}s`;
       boxesClone.style.transform = `translateY(-${
         door.clientHeight * (pool.length - 1)
@@ -139,29 +192,18 @@
     const allEqual = visibleImages.every((src) => src === visibleImages[0]);
 
     if (allEqual) {
-      // Play win sound
-      console.log("pre", wins);
       wins++;
-      console.log("after", wins);
-
       document.querySelector(".info").textContent = `Highest Score: ${wins}`;
-      if (wins >= 2) {
-        const winSound = new Audio("./sounds/win-sound-2.mp3");
-        winSound.play();
-      } else {
-        const winSound = new Audio("./sounds/win-sound-1.mp3");
-        winSound.play();
-      }
-
-      // Play win confetti
+      const winSound = new Audio(
+        wins >= 2 ? "./sounds/win-sound-2.mp3" : "./sounds/win-sound-1.mp3"
+      );
+      winSound.play();
       shoot();
     } else {
       wins = 0;
-
       document.querySelector(".info").textContent = `Highest Score: ${wins}`;
-      const winSound = new Audio("./sounds/lose-sound.mp3");
-      winSound.play();
-      console.log("Try again! 🚀");
+      const loseSound = new Audio("./sounds/lose-sound.mp3");
+      loseSound.play();
     }
   }
 
