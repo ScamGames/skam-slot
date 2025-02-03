@@ -3,11 +3,11 @@
 
   const items = [
     "./images/img1.png",
-    "./images/img2.png",
-    "./images/img3.png",
-    "./images/img5.png",
-    "./images/img6.png",
-    "./images/img9.png",
+    // "./images/img2.png",
+    // "./images/img3.png",
+    // "./images/img5.png",
+    // "./images/img6.png",
+    // "./images/img9.png",
     // "./images/img12.png",
     // "./images/img13.png",
     // "./images/img4.png",
@@ -196,6 +196,8 @@
       visibleImages.push(box.src); // Collect the src of the first visible image
     }
 
+    console.log(visibleImages);
+
     const allEqual = visibleImages.every((src) => src === visibleImages[0]);
 
     if (allEqual) {
@@ -206,7 +208,6 @@
         wins >= 2 ? "./sounds/win-sound-2.mp3" : "./sounds/win-sound-1.mp3"
       );
 
-      stopAudio(winSound); // Ensure only one instance plays
       await winSound.play();
       shoot();
     } else {
