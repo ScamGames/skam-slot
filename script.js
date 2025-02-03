@@ -89,9 +89,9 @@
 
         // Apply the animation
         boxes.style.transform = "translateY(0)";
+        boxes.style.transitionDuration = `${i + 1}s`;
       }
 
-      console.log("Checking win condition");
       await checkWin(); // Call checkWin() only once after all doors finish
     } finally {
       // Always reset flags properly
@@ -99,8 +99,6 @@
       resetButton.disabled = false;
       isReset = false;
       // spinButton.disabled = false; // Re-enable spin button after spin
-
-      console.log("Spin completed");
     }
   }
 
@@ -190,8 +188,7 @@
   }
 
   async function checkWin() {
-    console.log("checkWin played");
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 3500));
     const visibleImages = [];
 
     for (const door of doors) {
@@ -213,7 +210,6 @@
       await winSound.play();
       shoot();
     } else {
-      console.log("lost");
       wins = 0;
       document.querySelector(".info").textContent = `Highest Score: ${wins}`;
 
