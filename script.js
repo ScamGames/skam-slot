@@ -5,36 +5,37 @@
     "./images/img1.png",
     "./images/img2.png",
     "./images/img3.png",
-    "./images/img4.png",
     "./images/img5.png",
     "./images/img6.png",
-    "./images/img7.png",
-    "./images/img8.png",
     "./images/img9.png",
-    "./images/img10.png",
-    "./images/img11.png",
     "./images/img12.png",
     "./images/img13.png",
-    "./images/img14.png",
-    "./images/img15.png",
-    "./images/img16.png",
-    "./images/img17.png",
-    "./images/img18.png",
-    "./images/img19.png",
-    "./images/img20.png",
-    "./images/img21.png",
-    "./images/img22.png",
+    // "./images/img4.png",
+    // "./images/img7.png",
+    // "./images/img8.png",
+    // "./images/img10.png",
+    // "./images/img11.png",
+    // "./images/img14.png",
+    // "./images/img15.png",
+    // "./images/img16.png",
+    // "./images/img17.png",
+    // "./images/img18.png",
+    // "./images/img19.png",
+    // "./images/img20.png",
+    // "./images/img21.png",
+    // "./images/img22.png",
   ];
 
   let wins = 0;
   let isSpinning = false; // Track if spinning is in progress
-  let isReset = false; // Track if reset has been triggered
+  let isReset = true; // Track if reset has been triggered
 
+  const loseSound = new Audio("./sounds/lose-sound.mp3");
   const doors = document.querySelectorAll(".door");
   const spinButton = document.querySelector("#spinner");
   const resetButton = document.querySelector("#reseter");
 
-  spinButton.disabled = true; // Disable spin initially
+  spinButton.disabled = false; // Disable spin initially
   spinButton.addEventListener("click", spin);
   resetButton.addEventListener("click", () => {
     init();
@@ -72,27 +73,34 @@
     if (isSpinning) return; // Prevent multiple spins if already spinning
     if (!isReset) return; // Prevent spin if reset hasn't been triggered
 
+    console.log("Spin started");
+
     // Disable buttons and set the spinning flag
     isSpinning = true;
     spinButton.disabled = true;
     resetButton.disabled = true;
 
     try {
-      init(false, 1, 2);
-      for (const door of doors) {
+      init(false, 1, 2); // Initialize slot machine animation
+
+      for (let i = 0; i < doors.length; i++) {
+        const door = doors[i];
         const boxes = door.querySelector(".boxes");
-        const duration = parseInt(boxes.style.transitionDuration);
+
+        // Apply the animation
         boxes.style.transform = "translateY(0)";
-        await new Promise((resolve) => setTimeout(resolve, duration * 100));
       }
-      await checkWin();
+
+      console.log("Checking win condition");
+      await checkWin(); // Call checkWin() only once after all doors finish
     } finally {
-      // Always re-enable reset button after spinning completes
+      // Always reset flags properly
       isSpinning = false;
       resetButton.disabled = false;
-
-      // Require another reset before next spin
       isReset = false;
+      // spinButton.disabled = false; // Re-enable spin button after spin
+
+      console.log("Spin completed");
     }
   }
 
@@ -119,7 +127,7 @@
           function () {
             door.dataset.spinned = "1";
             this.querySelectorAll(".box img").forEach((img) => {
-              img.style.filter = "blur(1px)";
+              img.style.filter = "blur(0px)";
             });
           },
           { once: true }
@@ -182,8 +190,10 @@
   }
 
   async function checkWin() {
+    console.log("checkWin played");
     await new Promise((resolve) => setTimeout(resolve, 2000));
     const visibleImages = [];
+
     for (const door of doors) {
       const box = door.querySelector(".boxes .box:first-child img");
       visibleImages.push(box.src); // Collect the src of the first visible image
@@ -194,15 +204,19 @@
     if (allEqual) {
       wins++;
       document.querySelector(".info").textContent = `Highest Score: ${wins}`;
+
       const winSound = new Audio(
         wins >= 2 ? "./sounds/win-sound-2.mp3" : "./sounds/win-sound-1.mp3"
       );
-      winSound.play();
+
+      stopAudio(winSound); // Ensure only one instance plays
+      await winSound.play();
       shoot();
     } else {
+      console.log("lost");
       wins = 0;
       document.querySelector(".info").textContent = `Highest Score: ${wins}`;
-      const loseSound = new Audio("./sounds/lose-sound.mp3");
+
       loseSound.play();
     }
   }
