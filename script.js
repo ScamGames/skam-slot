@@ -4,11 +4,11 @@
   const items = [
     "./images/img1.png",
     "./images/img2.png",
-    "./images/img3.png",
     "./images/img5.png",
     "./images/img6.png",
-    // "./images/img9.png",
-    // "./images/img12.png",
+    "./images/img9.png",
+    "./images/img12.png",
+    // "./images/img3.png",
     // "./images/img13.png",
     // "./images/img4.png",
     // "./images/img7.png",
@@ -41,6 +41,8 @@
     init();
     isReset = true; // Mark reset as triggered
     spinButton.disabled = false; // Enable spin after reset
+    loseSound.pause();
+    loseSound.currentTime = 0;
   });
 
   const defaults = {
@@ -81,17 +83,16 @@
     resetButton.disabled = true;
 
     try {
-      init(false, 1, 2); // Initialize slot machine animation
+      init(false, 1, 5); // Initialize slot machine animation
 
-      for (let i = 0; i < doors.length; i++) {
-        const door = doors[i];
+      for (let i = 1; i < doors.length; i++) {
+        const door = doors[i - 1];
         const boxes = door.querySelector(".boxes");
 
         // Apply the animation
         boxes.style.transform = "translateY(0)";
-        boxes.style.transitionDuration = `${i + 1}s`;
+        boxes.style.transition = `transform ${i * 1}s ease-in-out`;
       }
-
       await checkWin(); // Call checkWin() only once after all doors finish
     } finally {
       // Always reset flags properly
@@ -170,7 +171,11 @@
         box.appendChild(img);
         boxesClone.appendChild(box);
       }
-      boxesClone.style.transitionDuration = `${duration > 0 ? duration : 1}s`;
+      const speedMultiplier = 0.1;
+      // 🔥 Increase speed by reducing duration (multiply by 0.5 for double speed)
+      boxesClone.style.transitionDuration = `${
+        duration > 0 ? duration * speedMultiplier : 0.3
+      }s`;
       boxesClone.style.transform = `translateY(-${
         door.clientHeight * (pool.length - 1)
       }px)`;
@@ -188,7 +193,7 @@
   }
 
   async function checkWin() {
-    await new Promise((resolve) => setTimeout(resolve, 3500));
+    await new Promise((resolve) => setTimeout(resolve, 6000));
     const visibleImages = [];
 
     for (const door of doors) {
@@ -214,6 +219,10 @@
       wins = 0;
       document.querySelector(".info").textContent = `Highest Score: ${wins}`;
 
+      if (!loseSound.paused) {
+        loseSound.pause();
+        loseSound.currentTime = 0;
+      }
       loseSound.play();
     }
   }

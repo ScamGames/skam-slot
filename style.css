@@ -9,7 +9,7 @@ body {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   overflow: hidden;
-  background: #003bff;
+  background: black;
 }
 
 *,
@@ -52,35 +52,42 @@ body {
 
 .doors {
   display: flex;
-  /* box-shadow: 0 0 3px 2px rgba(255, 255, 255, 0.5); */
-  /* border-radius: 159.5px; */
+  box-shadow: 0 0 3px 2px rgba(255, 255, 255, 0.5);
+  border-radius: 159.5px;
   background-color: rgba(255, 255, 255, 0.1);
-  /* border: 1px solid white; */
+  border: 1px solid white;
   padding: 24px;
-  border-radius: 10px;
   margin: 25px;
 }
 
 .door {
-  background: #fafafa;
+  background: rgba(255, 255, 255, 0.3); /* Slight transparency */
   width: 217px;
   height: 270px;
   overflow: hidden;
   margin: 1ch;
   border-radius: 17px;
-  background-color: #ffffff;
   position: relative;
+
+  box-shadow: 9px 9px 9px rgba(0, 0, 0, 0.7),
+    /* Outer shadow */ inset 50px 50px 10px rgba(0, 0, 0, 0.5),
+    /* Inner shadow */ 0px 0px 114px 0px #ffffff40; /* Soft white glow effect */
+
+  /* Border */
+
+  /* Apply background blur */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); /* For Safari */
 }
 
-/* .right_door {
+.right_door {
   border-radius: 17px 147px 147px 17px;
 }
 .left_door {
   border-radius: 147px 17px 17px 147px;
-} */
+}
 
 .boxes {
-  transition: transform 1s ease-in-out;
   background-color: #ffffff;
   position: relative;
 }
@@ -96,7 +103,7 @@ body {
 .buttons {
   margin: 1rem 0 2rem 0;
 }
-/* 
+
 button {
   cursor: pointer;
   font-size: 1.2rem;
@@ -107,7 +114,11 @@ button {
   font-size: 64.88px;
   font-weight: 400;
   border: none;
-} */
+}
+
+img {
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)); /* Shadow with blur */
+}
 
 .info {
   position: fixed;
