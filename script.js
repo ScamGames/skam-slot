@@ -193,7 +193,7 @@
   }
 
   async function checkWin() {
-    await new Promise((resolve) => setTimeout(resolve, 6000));
+    await new Promise((resolve) => setTimeout(resolve, 3300));
     const visibleImages = [];
 
     for (const door of doors) {
